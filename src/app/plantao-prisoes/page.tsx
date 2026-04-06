@@ -60,6 +60,11 @@ export default function PlantaoPrisoesPage() {
       const endpoint = activeTab === "PRESOS" ? "/api/presos" : 
                        activeTab === "PLANTAO" ? "/api/plantao" : "/api/bens";
       const res = await fetch(endpoint);
+      
+      if (!res.ok) {
+        throw new Error(`Erro na API: ${res.status}`);
+      }
+
       const json = await res.json();
       setData(json);
 

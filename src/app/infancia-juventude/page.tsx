@@ -49,6 +49,11 @@ export default function InfanciaJuventudePage() {
     try {
       const endpoint = activeTab === "ACOLHIMENTO" ? "/api/acolhimento" : "/api/guias-mse";
       const res = await fetch(endpoint);
+      
+      if (!res.ok) {
+        throw new Error(`Erro na API: ${res.status}`);
+      }
+
       const json = await res.json();
       setData(json);
 
