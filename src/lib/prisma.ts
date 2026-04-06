@@ -1,15 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 
-// This makes the project extremely robust on Windows with folder spaces.
-// We dynamically build the absolute path to the database.
-const dbPath = path.join(process.cwd(), "prisma", "dev.db");
-const dbUrl = `file:${dbPath}`;
+// In Vercel (production), DATABASE_URL is usually provided in the environment.
+// Locally, if DATABASE_URL is missing, we use a default SQLite path.
+const getDatabaseUrl = () => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  
+  // Local fallback for SQLite
+  const dbPath = path.join(process.cwd(), "prisma", "dev.db");
+  return `file:${dbPath}`;
+};
 
-console.log("Prisma Initialization:");
-console.log("  - CWD:", process.cwd());
-console.log("  - DB Path:", dbPath);
-console.log("  - DB URL:", dbUrl);
+const dbUrl = getDatabaseUrl();
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

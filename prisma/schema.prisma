@@ -8,10 +8,15 @@ datasource db {
 }
 
 model Processo {
-  id              Int          @id @default(autoincrement())
-  numero_processo String       @unique
-  expedientes     Expediente[]
-  createdAt       DateTime     @default(now())
+  id               Int               @id @default(autoincrement())
+  numero_processo  String            @unique
+  expedientes      Expediente[]
+  preso            PresoProvisorio?
+  bens             BemApreendido[]
+  acolhimentos     Acolhimento[]
+  guiasMse         GuiaMSE[]
+  plantaoRegistros PlantaoRegistro[]
+  createdAt        DateTime          @default(now())
 }
 
 enum TipoExpediente {
@@ -20,15 +25,15 @@ enum TipoExpediente {
 }
 
 model Expediente {
-  id                       Int            @id @default(autoincrement())
-  processoId               Int
-  processo                 Processo       @relation(fields: [processoId], references: [id])
-  tipo                     TipoExpediente
-  ano                      Int
-  numero_sequencial        Int
+  id                        Int            @id @default(autoincrement())
+  processoId                Int
+  processo                  Processo       @relation(fields: [processoId], references: [id])
+  tipo                      TipoExpediente
+  ano                       Int
+  numero_sequencial         Int
   destinatario_beneficiario String
-  valor                    Float?
-  data_emissao             DateTime       @default(now())
+  valor                     Float?
+  data_emissao              DateTime       @default(now())
 
   @@unique([tipo, ano, numero_sequencial])
 }
@@ -42,11 +47,82 @@ enum TipoContato {
 }
 
 model Contato {
-  id       Int        @id @default(autoincrement())
-  nome     String
-  tipo     TipoContato
-  telefone String?
-  email    String?
-  oab      String?
-  createdAt DateTime  @default(now())
+  id        Int         @id @default(autoincrement())
+  nome      String
+  tipo      TipoContato
+  telefone  String?
+  email     String?
+  oab       String?
+  createdAt DateTime    @default(now())
+}
+
+// Módulo de Plantão e Prisões
+model PlantaoRegistro {
+  id             Int       @id @default(autoincrement())
+  nome           String
+  adv_dp         String? // Advogado ou Defensoria
+  bnmp           String? // SIM/NÃO ou número
+  processoId     Int?
+  processo       Processo? @relation(fields: [processoId], references: [id])
+  tipo           String? // FLAGRANTE, MANDADO, etc.
+  servidor       String?
+  assessor       String?
+  situacao       String? // DEVOLVIDO, etc.
+  encaminhamento String? // LIBERDADE, PREVENTIVA, etc.
+  preso_em       String? // Local da prisão
+  mes_referencia String // Ex: "JANEIRO 2025"
+  createdAt      DateTime  @default(now())
+}
+
+model PresoProvisorio {
+  id                  Int       @id @default(autoincrement())
+  nome                String
+  data_prisao         DateTime?
+  processoId          Int       @unique
+  processo            Processo  @relation(fields: [processoId], references: [id])
+  situacao_criminal   String?
+  data_ultima_revisao DateTime
+  data_vencimento     DateTime // 90 dias após a última revisão
+  observacoes         String?
+  createdAt           DateTime  @default(now())
+}
+
+model BemApreendido {
+  id                 Int       @id @default(autoincrement())
+  processoId         Int
+  processo           Processo  @relation(fields: [processoId], references: [id])
+  bin                String? // "BIN ?" na planilha
+  descricao          String // "DESCRIÇÃO DO BEM"
+  data_apreensao     DateTime?
+  procedimento       String? // IP, TCO, etc.
+  localizacao        String? // "ONDE SE ENCONTRA O BEM"
+  cadastrado_sngb    String? // SIM/NÃO
+  data_cadastro_sngb DateTime?
+  observacoes        String?
+  createdAt          DateTime  @default(now())
+}
+
+// Módulo de Infância e Juventude
+model Acolhimento {
+  id                      Int       @id @default(autoincrement())
+  nome_menor              String
+  data_acolhimento        DateTime?
+  processoId              Int?
+  processo                Processo? @relation(fields: [processoId], references: [id])
+  local_acolhimento       String? // ABRIGO ou FAMÍLIA ACOLHEDORA
+  data_proxima_revaliacao DateTime // Default: data_acolhimento + 3 meses
+  dados_familiares        String? // "DADOS DOS GENITORES/FAMÍLIA"
+  status                  String    @default("ACOLHIDO")
+  createdAt               DateTime  @default(now())
+}
+
+model GuiaMSE {
+  id              Int      @id @default(autoincrement())
+  numero_guia     String?
+  infrator        String
+  processoId      Int
+  processo        Processo @relation(fields: [processoId], references: [id])
+  comarca_destino String
+  providencia     String? // "PROVIDÊNCIA" na planilha (status/observação)
+  createdAt       DateTime @default(now())
 }
