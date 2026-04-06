@@ -87,7 +87,7 @@ export async function DELETE(request: NextRequest) {
     if (!id) return NextResponse.json({ error: "ID obrigatório" }, { status: 400 });
     await prisma.plantaoRegistro.delete({ where: { id: Number(id) } });
     return NextResponse.json({ mensagem: "Registro removido" });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao remover" }, { status: 500 });
   }
 }

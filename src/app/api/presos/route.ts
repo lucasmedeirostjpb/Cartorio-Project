@@ -97,7 +97,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ mensagem: "Preso removido com sucesso" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erro ao remover preso:", error);
     return NextResponse.json({ error: "Erro ao remover registro" }, { status: 500 });
   }
