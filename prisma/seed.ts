@@ -1,10 +1,22 @@
+import "dotenv/config";
 import { PrismaClient, TipoExpediente, TipoContato } from "@prisma/client";
+import path from "path";
 
-// In seed script, we rely on the env var or standard initialization
-const prisma = new PrismaClient();
+// Consistent with src/lib/prisma.ts logic. 
+const dbPath = path.join(process.cwd(), "prisma", "dev.db");
+const dbUrl = `file:${dbPath}`;
+
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: dbUrl,
+    },
+  },
+});
 
 async function main() {
   console.log("🌱 Iniciando seed...");
+  console.log("Using Database URL:", dbUrl);
 
   // Clear existing data in reverse order of dependency
   await prisma.expediente.deleteMany();
