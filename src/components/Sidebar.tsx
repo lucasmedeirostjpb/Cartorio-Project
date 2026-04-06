@@ -9,12 +9,16 @@ import {
   Scale,
   Menu,
   X,
+  Shield,
+  Baby,
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/expedientes", label: "Expedientes", icon: FileText },
+  { href: "/plantao-prisoes", label: "Plantão e Prisões", icon: Shield },
+  { href: "/infancia-juventude", label: "Infância e Juventude", icon: Baby },
   { href: "/contatos", label: "Contatos", icon: Users },
 ];
 

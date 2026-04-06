@@ -10,6 +10,9 @@ import {
   ShieldAlert,
   Users,
   Bell,
+  Shield,
+  Baby,
+  Heart,
 } from "lucide-react";
 
 interface Stats {
@@ -141,7 +144,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Total */}
-        <div className="animate-fade-in-up stagger-3 bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300 group sm:col-span-2 lg:col-span-1">
+        <div className="animate-fade-in-up stagger-3 bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300 group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-slate-500 mb-1">
@@ -160,6 +163,46 @@ export default function DashboardPage() {
             </div>
             <div className="bg-violet-50 p-3 rounded-xl group-hover:bg-violet-100 transition-colors">
               <TrendingUp className="text-violet-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        {/* Presos Provisórios */}
+        <div className="animate-fade-in-up stagger-4 bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-orange-500/5 transition-all duration-300 group">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500 mb-1">
+                Presos Provisórios
+              </p>
+              <p className="text-3xl font-bold text-slate-800">
+                3
+              </p>
+              <p className="text-xs text-red-500 mt-2 font-medium">
+                Vencendo revisão
+              </p>
+            </div>
+            <div className="bg-orange-50 p-3 rounded-xl group-hover:bg-orange-100 transition-colors">
+              <Shield className="text-orange-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        {/* Infância e Juventude */}
+        <div className="animate-fade-in-up stagger-5 bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-pink-500/5 transition-all duration-300 group">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500 mb-1">
+                Acolhidos Atuais
+              </p>
+              <p className="text-3xl font-bold text-slate-800">
+                1
+              </p>
+              <p className="text-xs text-pink-500 mt-2 font-medium">
+                Infância e Juventude
+              </p>
+            </div>
+            <div className="bg-pink-50 p-3 rounded-xl group-hover:bg-pink-100 transition-colors">
+              <Heart className="text-pink-600" size={24} />
             </div>
           </div>
         </div>
