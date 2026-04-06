@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Processo {
+  id              Int          @id @default(autoincrement())
+  numero_processo String       @unique
+  expedientes     Expediente[]
+  createdAt       DateTime     @default(now())
+}
+
+enum TipoExpediente {
+  OFICIO
+  ALVARA
+}
+
+model Expediente {
+  id                       Int            @id @default(autoincrement())
+  processoId               Int
+  processo                 Processo       @relation(fields: [processoId], references: [id])
+  tipo                     TipoExpediente
+  ano                      Int
+  numero_sequencial        Int
+  destinatario_beneficiario String
+  valor                    Float?
+  data_emissao             DateTime       @default(now())
+
+  @@unique([tipo, ano, numero_sequencial])
+}
+
+enum TipoContato {
+  DELEGACIA
+  PRESIDIO
+  ADVOGADO
+  CONSELHO
+  OUTROS
+}
+
+model Contato {
+  id       Int        @id @default(autoincrement())
+  nome     String
+  tipo     TipoContato
+  telefone String?
+  email    String?
+  oab      String?
+  createdAt DateTime  @default(now())
+}

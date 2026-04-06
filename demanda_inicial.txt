@@ -1,0 +1,62 @@
+# Proposta de Sistema de Gestão Cartorária (Substituição de Planilhas)
+**Comarca:** 2ª Vara Mista de Queimadas - PB
+
+Com base na análise dos dados utilizados pela chefia de cartório e equipe, a planilha atual funciona como um verdadeiro **ERP (Sistema de Gestão) informal do cartório**. 
+
+Para substituir essa planilha por um sistema de software robusto (web ou desktop), a arquitetura ideal deve ser estruturada em **Módulos Integrados**, utilizando o "Número do Processo" como chave principal relacional. Abaixo está o desenho funcional do sistema.
+
+---
+
+## 1. Módulos Principais do Sistema
+
+### A. Módulo de Expedientes (Emissão e Controle)
+*Substitui: Ofícios, Alvarás, Notas de Foro (Todos os anos).*
+* **Funcionalidade:** Gerador automático de numeração. O servidor insere o número do processo, o destinatário/beneficiário e o valor (se alvará). O sistema gera o número sequencial do ano (ex: 154/2026) automaticamente, evitando duplicidades.
+* **Busca:** Permite pesquisar rapidamente todos os ofícios ou alvarás emitidos para um determinado processo ao longo dos anos.
+
+### B. Módulo de Plantão Judiciário e Prisões (Urgências e Custódia)
+*Substitui: Plantões mensais, Presos Provisórios, Bens para Cadastrar, Migração Penais.*
+* **Gestão de Plantão:** Registro rápido dos flagrantes, dados dos autuados, advogado/defensoria vinculada, servidor/assessor responsável e a decisão do juiz (ex: liberdade, conversão em preventiva).
+* **Painel de Presos Provisórios:** Dashboard com Alertas. O sistema rastreia a "Data da última avaliação da prisão" e notifica o cartório quando o prazo de revisão legal estiver vencendo, prevenindo excesso de prazo.
+* **Bens Apreendidos:** Controle de acautelamento (armas, veículos), vinculação ao processo e status de cadastro no sistema nacional (SNGB).
+
+### C. Módulo de Infância e Juventude
+*Substitui: Inf. e Juventude - Urgentes, Guias MSE - Controle.*
+* **Acolhimento Institucional:** Cadastro de crianças/adolescentes em abrigos ou famílias acolhedoras. O sistema gera **alertas de prazos** para a reavaliação do acolhimento (ex: "Próxima Avaliação em 15/08/2025").
+* **Controle de MSE:** Acompanhamento de Guias de Medida Socioeducativa remetidas para outras comarcas e verificação de extinção de punibilidade.
+
+### D. Módulo de Acompanhamento Processual Especializado
+*Substitui: Perícias INSS, Interdições - Nomes, Bloqueios (Sisbajud), Paralisados mais de 100 dias GA.*
+* **Agenda de Perícias e Interdições:** Controle de datas, nomes dos peritos, pagamento de honorários, formulação de quesitos e status de intimação.
+* **Fila de Trabalho (Paralisados):** Integração (manual ou via API/Web Scraping do PJe, se aplicável) para acompanhar processos prioritários ou paralisados, definindo qual providência o cartório deve tomar.
+* **Sisbajud:** Controle interno de minutas de bloqueio financeiro assinadas.
+
+### E. Módulo de Gestão de Acervo (Arquivo e Descarte)
+*Substitui: Descarte de Processos, Descarte Anual, Execuções Fiscais - Descarte, Caixas Migração PJe.*
+* **Gestão Física e Virtual:** Mapeamento da localização física do processo (Ex: "Caixa 58D/2019"), status de digitalização/migração para o PJe, e controle de autorização de descarte ou prescrição intercorrente.
+
+### F. Módulo Administrativo e Diretório
+*Substitui: Info. Cartório, Escalas, Telefones e Endereços, Dativos, Distribuição de Precatórias, Portarias do Juízo, Processos Administrativos.*
+* **Painel da Chefia:** Gerenciamento da escala diária da equipe (balcão, audiência, férias).
+* **Agenda de Contatos:** Diretório compartilhado de delegacias, presídios, conselhos tutelares e advogados dativos.
+* **Base de Conhecimento:** Regras para distribuição de precatórias (outros estados), controle de portarias e correições em cartórios extrajudiciais.
+
+---
+
+## 2. Principais Vantagens em Relação ao Excel
+
+1. **Fim da Concorrência de Edição:** Diferente do Excel, um sistema centralizado (banco de dados) permite que toda a equipe acesse e edite registros simultaneamente sem travar ou corromper dados.
+2. **Alertas Proativos (Dashboards):** Fim da busca manual por datas vencidas. A tela inicial mostrará resumos automáticos (Ex: *3 Presos Provisórios com revisão vencendo esta semana* ou *2 Crianças aguardando relatório do SNA*).
+3. **Visão Centrada no Processo:** Ao pesquisar um número de processo, o sistema unifica todas as informações: ofícios gerados, bens apreendidos, alvarás pagos e status de prisão, tudo em uma única tela.
+4. **Segurança e Auditoria:** Controle de logs de usuários (saber quem emitiu qual documento ou apagou um registro) e rotinas de backup automatizadas.
+
+---
+
+## 3. Sugestão de Desenvolvimento (Fases do MVP)
+
+Devido ao grande volume de dados e regras de negócio, sugere-se a construção de um **Mínimo Produto Viável (MVP)** em fases:
+
+* **Fase 1 (Uso Diário Alto):** Módulo de *Expedientes (Ofícios/Alvarás)* e o *Diretório de Contatos/Dativos*. Isso retira a equipe do Excel para as tarefas de maior volume.
+* **Fase 2 (Controle Crítico - Prazos):** Módulos de *Presos Provisórios* e *Infância e Juventude* com a lógica de alertas de datas em background.
+* **Fase 3 (Plantão e Especializados):** Módulos de *Plantões*, *Perícias* e *Bens Apreendidos*.
+* **Fase 4 (Gestão de Acervo e ADM):** Módulo de controle de caixas, descarte de processos e painel de escalas da chefia.
