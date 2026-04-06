@@ -1,3 +1,0 @@
-﻿Current working directory: C:\Users\lucas\Downloads\Dev\Projeto Cart├│rio Queimadas
-DATABASE_URL from env: file:./prisma/dev.db
-Trying to connect to Prisma...
