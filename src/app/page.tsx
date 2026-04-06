@@ -20,6 +20,8 @@ interface Stats {
   totalOficios: number;
   totalAlvaras: number;
   totalExpedientes: number;
+  totalPresos: number;
+  totalAcolhidos: number;
 }
 
 const alertas = [
@@ -175,7 +177,11 @@ export default function DashboardPage() {
                 Presos Provisórios
               </p>
               <p className="text-3xl font-bold text-slate-800">
-                3
+                {loading ? (
+                  <span className="inline-block w-12 h-8 bg-slate-200 rounded animate-pulse" />
+                ) : (
+                  stats?.totalPresos ?? 0
+                )}
               </p>
               <p className="text-xs text-red-500 mt-2 font-medium">
                 Vencendo revisão
@@ -195,7 +201,11 @@ export default function DashboardPage() {
                 Acolhidos Atuais
               </p>
               <p className="text-3xl font-bold text-slate-800">
-                1
+                {loading ? (
+                  <span className="inline-block w-12 h-8 bg-slate-200 rounded animate-pulse" />
+                ) : (
+                  stats?.totalAcolhidos ?? 0
+                )}
               </p>
               <p className="text-xs text-pink-500 mt-2 font-medium">
                 Infância e Juventude
