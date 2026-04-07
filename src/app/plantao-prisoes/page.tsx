@@ -19,7 +19,7 @@ import {
 import { format, isBefore, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-type Tab = "PRESOS" | "PLANTAO" | "BENS";
+type Tab = "PRESOS" | "BENS";
 
 export default function PlantaoPrisoesPage() {
   const [activeTab, setActiveTab] = useState<Tab>("PRESOS");
@@ -31,7 +31,7 @@ export default function PlantaoPrisoesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Stats
-  const [stats, setStats] = useState({ presosVencendo: 0, flagrantesMes: 0, bensTotal: 0 });
+  const [stats, setStats] = useState({ presosVencendo: 0, bensTotal: 0 });
 
   // Form States - Presos
   const [presoNome, setPresoNome] = useState("");
@@ -39,14 +39,6 @@ export default function PlantaoPrisoesPage() {
   const [presoDataPrisao, setPresoDataPrisao] = useState("");
   const [presoSituacao, setPresoSituacao] = useState("");
   const [presoUltimaRevisao, setPresoUltimaRevisao] = useState("");
-
-  // Form States - Plantão
-  const [plantaoNome, setPlantaoNome] = useState("");
-  const [plantaoProcesso, setPlantaoProcesso] = useState("");
-  const [plantaoTipo, setPlantaoTipo] = useState("FLAGRANTE");
-  const [plantaoSituacao, setPlantaoSituacao] = useState("");
-  const [plantaoEncaminhamento, setPlantaoEncaminhamento] = useState("");
-  const [plantaoMes, setPlantaoMes] = useState(format(new Date(), "MMMM yyyy", { locale: ptBR }).toUpperCase());
 
   // Form States - Bens
   const [bemProcesso, setBemProcesso] = useState("");
@@ -57,8 +49,7 @@ export default function PlantaoPrisoesPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const endpoint = activeTab === "PRESOS" ? "/api/presos" : 
-                       activeTab === "PLANTAO" ? "/api/plantao" : "/api/bens";
+      const endpoint = activeTab === "PRESOS" ? "/api/presos" : "/api/bens";
       const res = await fetch(endpoint);
       
       if (!res.ok) {
@@ -74,8 +65,6 @@ export default function PlantaoPrisoesPage() {
           return isBefore(v, addDays(new Date(), 7));
         }).length;
         setStats(prev => ({ ...prev, presosVencendo: soon }));
-      } else if (activeTab === "PLANTAO") {
-        setStats(prev => ({ ...prev, flagrantesMes: json.length }));
       } else if (activeTab === "BENS") {
         setStats(prev => ({ ...prev, bensTotal: json.length }));
       }
@@ -98,7 +87,6 @@ export default function PlantaoPrisoesPage() {
   const clearForm = () => {
     setEditingId(null);
     setPresoNome(""); setPresoProcesso(""); setPresoDataPrisao(""); setPresoSituacao(""); setPresoUltimaRevisao("");
-    setPlantaoNome(""); setPlantaoProcesso(""); setPlantaoSituacao(""); setPlantaoEncaminhamento("");
     setBemProcesso(""); setBemDescricao(""); setBemLocalizacao("");
   };
 
@@ -111,13 +99,6 @@ export default function PlantaoPrisoesPage() {
       setPresoDataPrisao(item.data_prisao ? item.data_prisao.split("T")[0] : "");
       setPresoSituacao(item.situacao_criminal || "");
       setPresoUltimaRevisao(item.data_ultima_revisao ? item.data_ultima_revisao.split("T")[0] : "");
-    } else if (activeTab === "PLANTAO") {
-      setPlantaoNome(item.nome);
-      setPlantaoProcesso(item.processo?.numero_processo || "");
-      setPlantaoTipo(item.tipo);
-      setPlantaoSituacao(item.situacao || "");
-      setPlantaoEncaminhamento(item.encaminhamento || "");
-      setPlantaoMes(item.mes_referencia);
     } else {
       setBemProcesso(item.processo?.numero_processo || "");
       setBemDescricao(item.descricao);
@@ -130,8 +111,7 @@ export default function PlantaoPrisoesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este registro?")) return;
     try {
-      const endpoint = activeTab === "PRESOS" ? "/api/presos" : 
-                       activeTab === "PLANTAO" ? "/api/plantao" : "/api/bens";
+      const endpoint = activeTab === "PRESOS" ? "/api/presos" : "/api/bens";
       const res = await fetch(`${endpoint}?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setFeedback({ type: "success", message: "Registro removido com sucesso" });
@@ -161,17 +141,6 @@ export default function PlantaoPrisoesPage() {
         data_prisao: presoDataPrisao || null,
         situacao_criminal: presoSituacao,
         data_ultima_revisao: presoUltimaRevisao,
-      };
-    } else if (activeTab === "PLANTAO") {
-      endpoint = "/api/plantao";
-      body = {
-        id: editingId,
-        nome: plantaoNome,
-        numero_processo: plantaoProcesso,
-        tipo: plantaoTipo,
-        situacao: plantaoSituacao,
-        encaminhamento: plantaoEncaminhamento,
-        mes_referencia: plantaoMes,
       };
     } else {
       endpoint = "/api/bens";
@@ -226,7 +195,7 @@ export default function PlantaoPrisoesPage() {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4 shadow-sm">
           <div className="p-3 bg-red-50 rounded-xl text-red-600">
             <AlertTriangle size={24} />
@@ -234,15 +203,6 @@ export default function PlantaoPrisoesPage() {
           <div>
             <p className="text-sm font-medium text-slate-500">Prisões Vencendo</p>
             <p className="text-2xl font-bold text-slate-800">{stats.presosVencendo}</p>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4 shadow-sm">
-          <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
-            <Gavel size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500">Flagrantes (Mês)</p>
-            <p className="text-2xl font-bold text-slate-800">{stats.flagrantesMes}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4 shadow-sm">
@@ -261,11 +221,9 @@ export default function PlantaoPrisoesPage() {
         <h2 className="text-lg font-semibold text-slate-800 mb-5 flex items-center gap-2">
           {editingId ? <Edit2 size={20} className="text-amber-600" /> : <Plus size={20} className="text-blue-600" />}
           {editingId ? (
-            activeTab === "PRESOS" ? "Editar Revisão de Prisão" : 
-            activeTab === "PLANTAO" ? "Editar Registro de Plantão" : "Editar Bem Apreendido"
+            activeTab === "PRESOS" ? "Editar Revisão de Prisão" : "Editar Bem Apreendido"
           ) : (
-            activeTab === "PRESOS" ? "Nova Revisão de Prisão" : 
-            activeTab === "PLANTAO" ? "Novo Registro de Plantão" : "Cadastrar Bem Apreendido"
+            activeTab === "PRESOS" ? "Nova Revisão de Prisão" : "Cadastrar Bem Apreendido"
           )}
         </h2>
 
@@ -295,34 +253,7 @@ export default function PlantaoPrisoesPage() {
             </>
           )}
 
-          {activeTab === "PLANTAO" && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Nome do Flagranteado</label>
-                <input required type="text" className="w-full px-4 py-2 border rounded-xl" value={plantaoNome} onChange={e => setPlantaoNome(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Nº Processo (Se houver)</label>
-                <input type="text" className="w-full px-4 py-2 border rounded-xl" value={plantaoProcesso} onChange={e => setPlantaoProcesso(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Tipo</label>
-                <select className="w-full px-4 py-2 border rounded-xl" value={plantaoTipo} onChange={e => setPlantaoTipo(e.target.value)}>
-                  <option value="FLAGRANTE">FLAGRANTE</option>
-                  <option value="MANDADO">MANDADO</option>
-                  <option value="TC">TCO</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Situação</label>
-                <input type="text" placeholder="Ex: Devolvido, Concluso..." className="w-full px-4 py-2 border rounded-xl" value={plantaoSituacao} onChange={e => setPlantaoSituacao(e.target.value)} />
-              </div>
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-600 mb-1">Encaminhamento</label>
-                <input type="text" placeholder="Ex: Preventiva, Liberdade provisória..." className="w-full px-4 py-2 border rounded-xl" value={plantaoEncaminhamento} onChange={e => setPlantaoEncaminhamento(e.target.value)} />
-              </div>
-            </>
-          )}
+
 
           {activeTab === "BENS" && (
             <>
@@ -388,14 +319,7 @@ export default function PlantaoPrisoesPage() {
         >
           Presos Provisórios
         </button>
-        <button
-          onClick={() => { setActiveTab("PLANTAO"); setFeedback(null); }}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            activeTab === "PLANTAO" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          Plantão
-        </button>
+
         <button
           onClick={() => { setActiveTab("BENS"); setFeedback(null); }}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
@@ -410,9 +334,8 @@ export default function PlantaoPrisoesPage() {
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm min-h-[400px]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            {activeTab === "PRESOS" ? <Clock className="text-red-500" /> : 
-             activeTab === "PLANTAO" ? <Gavel className="text-blue-500" /> : <Package className="text-amber-500" />}
-            {activeTab === "PRESOS" ? "Revisão de Prisões" : activeTab === "PLANTAO" ? "Registro de Plantão" : "Bens Apreendidos"}
+            {activeTab === "PRESOS" ? <Clock className="text-red-500" /> : <Package className="text-amber-500" />}
+            {activeTab === "PRESOS" ? "Revisão de Prisões" : "Bens Apreendidos"}
           </h2>
           
           <div className="relative w-full sm:w-72">
@@ -449,15 +372,7 @@ export default function PlantaoPrisoesPage() {
                       <th className="py-3 px-4 text-left">Status</th>
                     </>
                   )}
-                  {activeTab === "PLANTAO" && (
-                    <>
-                      <th className="py-3 px-4 text-left">Nome</th>
-                      <th className="py-3 px-4 text-left">Processo</th>
-                      <th className="py-3 px-4 text-left">Tipo</th>
-                      <th className="py-3 px-4 text-left">Situação</th>
-                      <th className="py-3 px-4 text-left">Data</th>
-                    </>
-                  )}
+
                   {activeTab === "BENS" && (
                     <>
                       <th className="py-3 px-4 text-left">Processo</th>
@@ -495,15 +410,7 @@ export default function PlantaoPrisoesPage() {
                         </td>
                       </>
                     )}
-                    {activeTab === "PLANTAO" && (
-                      <>
-                        <td className="py-4 px-4 font-medium text-slate-700">{item.nome}</td>
-                        <td className="py-4 px-4 text-slate-500 font-mono text-xs">{item.processo?.numero_processo || "—"}</td>
-                        <td className="py-4 px-4 text-slate-600">{item.tipo}</td>
-                        <td className="py-4 px-4 text-slate-600">{item.situacao}</td>
-                        <td className="py-4 px-4 text-slate-500">{formatDate(item.createdAt)}</td>
-                      </>
-                    )}
+
                     {activeTab === "BENS" && (
                       <>
                         <td className="py-4 px-4 text-slate-500 font-mono text-xs">{item.processo?.numero_processo}</td>

@@ -11,6 +11,7 @@ import {
   X,
   Shield,
   Baby,
+  Calendar,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,6 +21,12 @@ const navItems = [
   { href: "/plantao-prisoes", label: "Plantão e Prisões", icon: Shield },
   { href: "/infancia-juventude", label: "Infância e Juventude", icon: Baby },
   { href: "/contatos", label: "Contatos", icon: Users },
+  {
+    href: "https://docs.google.com/spreadsheets/d/1DI_mRDiiIJzWnIisg6hWdx7AyHZEV-dQUWWnk0GXO84/edit?gid=2091178247#gid=2091178247",
+    label: "Planilha de Audiências",
+    icon: Calendar,
+    isExternal: true,
+  },
 ];
 
 export default function Sidebar() {
@@ -75,31 +82,33 @@ export default function Sidebar() {
               item.href === "/"
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
-                  transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-blue-600/20 text-blue-300 shadow-inner"
-                      : "text-slate-400 hover:bg-white/5 hover:text-white"
-                  }
-                `}
-              >
-                <item.icon
-                  size={20}
-                  className={isActive ? "text-blue-400" : "text-slate-500"}
-                />
-                {item.label}
-                {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />
-                )}
-              </Link>
-            );
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  target={(item as any).isExternal ? "_blank" : undefined}
+                  rel={(item as any).isExternal ? "noopener noreferrer" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+                    transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-blue-600/20 text-blue-300 shadow-inner"
+                        : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    }
+                  `}
+                >
+                  <item.icon
+                    size={20}
+                    className={isActive ? "text-blue-400" : "text-slate-500"}
+                  />
+                  {item.label}
+                  {isActive && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  )}
+                </Link>
+              );
           })}
         </nav>
 
