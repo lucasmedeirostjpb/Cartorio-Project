@@ -16,6 +16,7 @@ model Processo {
   acolhimentos     Acolhimento[]
   guiasMse         GuiaMSE[]
   plantaoRegistros PlantaoRegistro[]
+  audiencias       Audiencia[]
   createdAt        DateTime          @default(now())
 }
 
@@ -125,4 +126,45 @@ model GuiaMSE {
   comarca_destino String
   providencia     String? // "PROVIDÊNCIA" na planilha (status/observação)
   createdAt       DateTime @default(now())
+}
+
+enum ModalidadeAudiencia {
+  PRESENCIAL
+  ONLINE
+  HIBRIDA
+}
+
+enum StatusAudiencia {
+  AGENDADA
+  REALIZADA
+  CANCELADA
+  REDESIGNADA
+}
+
+model Audiencia {
+  id                   String              @id @default(uuid())
+  data_hora            DateTime
+  numero_processo      String
+  classe               String
+  tipo                 String
+  modalidade           ModalidadeAudiencia
+  link_video_conferencia String?
+  status               StatusAudiencia     @default(AGENDADA)
+  observacoes          String?
+  envolvidos           Envolvido[]
+  processoId           Int?
+  processo             Processo?           @relation(fields: [processoId], references: [id])
+  createdAt            DateTime            @default(now())
+}
+
+model Envolvido {
+  id                  String    @id @default(uuid())
+  audienciaId         String
+  audiencia           Audiencia @relation(fields: [audienciaId], references: [id], onDelete: Cascade)
+  nome                String
+  papel               String
+  telefone            String?
+  documento           String?
+  presenca_confirmada Boolean   @default(false)
+  createdAt           DateTime  @default(now())
 }

@@ -21,12 +21,7 @@ const navItems = [
   { href: "/plantao-prisoes", label: "Plantão e Prisões", icon: Shield },
   { href: "/infancia-juventude", label: "Infância e Juventude", icon: Baby },
   { href: "/contatos", label: "Contatos", icon: Users },
-  {
-    href: "https://docs.google.com/spreadsheets/d/1DI_mRDiiIJzWnIisg6hWdx7AyHZEV-dQUWWnk0GXO84/edit?gid=2091178247#gid=2091178247",
-    label: "Planilha de Audiências",
-    icon: Calendar,
-    isExternal: true,
-  },
+  { href: "/audiencias", label: "Audiências", icon: Calendar },
 ];
 
 export default function Sidebar() {
